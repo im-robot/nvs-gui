@@ -1,11 +1,18 @@
 {
-  "name": "nvs",
-  "version": "0.1.0",
+  "name": "nvs-gui",
+  "version": "1.0.0",
+  "author": {
+    "name": "Lidede",
+    "email": "lidede@88.com",
+    "url": "https://www.lidede.com",
+    "github": "im-robot"
+  },
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "electron:build": "vue-cli-service electron:build",
+    "electron:generate-icons": "electron-icon-builder --input=public/icon.png --output=build --flatten",
     "electron:serve": "vue-cli-service electron:serve",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
@@ -26,6 +33,7 @@
     "@vue/cli-service": "~5.0.0",
     "electron": "^13.0.0",
     "electron-devtools-installer": "^3.1.0",
+    "electron-icon-builder": "^2.0.1",
     "sass": "^1.32.7",
     "sass-loader": "^12.0.0",
     "vue-cli-plugin-electron-builder": "~2.1.1"

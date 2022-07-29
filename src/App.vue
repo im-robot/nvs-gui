@@ -174,6 +174,7 @@ async function removeNodejsVersion() {
         :column="2"
         size="small"
         border
+        v-if="checkedItem.version.length > 0"
       >
         <template #extra>
           <template v-if="checkedItem.installed">

@@ -6,42 +6,51 @@ import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 import { existsSync, mkdirSync, readdirSync, createWriteStream, readFileSync, copyFileSync, linkSync, symlinkSync, unlinkSync, writeFileSync, rmdirSync, statSync } from 'fs'
 import https from 'https'
 import crypto from 'crypto'
-import sevenBin from '7zip-bin'
 import Seven from 'node-7z'
 import { exec } from 'child_process'
+import path from 'path'
+const isDevelopment = process.env.NODE_ENV !== 'production'
 
 
-const pathTo7zip = process.env.NODE_ENV === 'development' ? 'F:\\nvs\\node_modules\\7zip-bin\\win\\x64\\7za.exe' : sevenBin.path7za
+const sevenBinRoot = path.join(app.getPath('exe'), '..' ,'resources/app.asar.unpacked/node_modules/7zip-bin/')
+
+var pathTo7zip = ''
+var osName = ''
+
 
 // 获取操作系统类型 eg. win-x64, win-x86, linux-x64, linux-x86, darwin-x64, linux-arm64, linux-armv7l
-function getOS() {
+function getBinAndSystem() {
   const os = require('os')
   const osType = os.type()
   const osArch = os.arch()
   const osPlatform = os.platform()
   const osRelease = os.release()
-  let osName =  ''
+  osName =  ''
+  let dir = ''
   if (osType === 'Windows_NT') {
     osName = `win-${osArch}`
+    dir = './win/'+ osArch +'/7za.exe'
   } else if (osType === 'Linux') {
     osName = `linux-${osArch}`
+    dir = './linux/'+ osArch +'/7za'
   } else if (osType === 'Darwin') {
     osName = `darwin-${osArch}`
+    dir = './darwin/'+ osArch +'/7za'
   }
-  console.log(`osName: ${osName}`, `osPlatform: ${osPlatform}`, `osRelease: ${osRelease}`);
-  return osName
-}
-const osName = getOS()
+  pathTo7zip = path.join(sevenBinRoot, dir)
 
-const nodejsPath = process.env.NODE_ENV === 'development' ? 'F:\\nvs\\nodejs' :  app.getAppPath() + '\\nodejs'
+  console.log(`osName: ${osName}`, `osPlatform: ${osPlatform}`, `osRelease: ${osRelease}`);
+  
+}
+getBinAndSystem()
+const nodejsPath = isDevelopment ? 'F:\\nvs\\nodejs' :  path.join(app.getPath('exe'), '..') + '\\nodejs'
 const downloadPath = nodejsPath + '\\download'
 const installedPath = nodejsPath + '\\installed'
 const activedPath = nodejsPath + '\\actived'
 
-const isDevelopment = process.env.NODE_ENV !== 'production'
 
 const cmds = {
-  win: `setx path "%path%;${activedPath}\\nodejs"`
+  win: `setx path "${activedPath}\\nodejs"`
 }
 
 // 判断执行shell命令
@@ -52,6 +61,7 @@ function execShell() {
   }
 }
 execShell()
+
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
@@ -69,6 +79,7 @@ async function createWindow() {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
+    icon: path.join(__dirname, 'assets/icons/256x256.png'),
     webPreferences: {
       
       // Use pluginOptions.nodeIntegration, leave this alone
@@ -86,9 +97,9 @@ async function createWindow() {
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
     if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
-    createProtocol('app')
+    createProtocol('nvs')
     // Load the index.html when not in development
-    win.loadURL('app://./index.html')
+    win.loadURL('nvs://./index.html')
   }
 }
 
