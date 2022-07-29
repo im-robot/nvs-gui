@@ -1,0 +1,24 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+@for $i from 1 to 4 {
+    .flex-#{$i} {
+        flex: #{$i};
+    }
+}
+
+.flex-center {
+    justify-content: center;
+    align-items: center;
+}
